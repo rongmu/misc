@@ -20,15 +20,15 @@ lst.each do |item|
   t = item.text
   if t =~ /#{book_title}　\d\d.+新字新仮名/
     item_name = t.sub(/^.*(\d\d) (.+)（.*$/) {
-                "#{author_name}.#{book_title}.#$1#$2.zip" }
+                  "#{author_name}.#{book_title}.#$1#$2.zip" }
     print item_name + "\t"
     # get download url
-    item_url = item.css("a:first-of-type").attr("href").to_s.
-          sub(/^\.\./, 'http://www.aozora.gr.jp')
+    item_url = item.css("a:first-of-type").attr("href").to_s
+                   .sub(/^\.\./, 'http://www.aozora.gr.jp')
     item_dlink_base = item_url.sub(/\/[^\/]+?$/, '')
     item_page = Nokogiri.HTML open(item_url)
-    item_dlink = item_page.css('table.download a[href$="zip"]').
-                 attr("href").text.sub(/^\./, item_dlink_base)
+    item_dlink = item_page.css('table.download a[href$="zip"]')
+                          .attr("href").text.sub(/^\./, item_dlink_base)
     puts item_dlink
     # download
     system %[wget -O "#{save_dir + item_name}" '#{item_dlink}']

@@ -2,7 +2,7 @@
 # coding: utf-8
 # usage: download book series from aozora-bunko.
 # author: eric
-# TODO: opt-parse
+# [todo] - opt-parse
 require 'nokogiri'
 require 'open-uri'
 
@@ -10,7 +10,7 @@ require 'open-uri'
 author_url = 'http://www.aozora.gr.jp/index_pages/person52.html'
 author_name = "紫式部.与謝野晶子訳"
 book_title = "源氏物語"
-# TODO default to '/tmp/aozoraget'
+# [todo] - default to '/tmp/aozoraget'
 save_dir = '/home/eric/tmp/genji/' # trailing '/' is a must.
 
 page = Nokogiri::HTML open(author_url)

@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+# usage: download book series from aozora-bunko.
+# author: eric
+# TODO: opt-parse
+require 'nokogiri'
+require 'open-uri'
+
+# variables
+author_url = 'http://www.aozora.gr.jp/index_pages/person52.html'
+author_name = "紫式部.与謝野晶子訳"
+book_title = "源氏物語"
+# TODO default to '/tmp/aozoraget'
+save_dir = '/home/eric/tmp/genji/' # trailing '/' is a must.
+
+page = Nokogiri::HTML open(author_url)
+lst = page.css("ol:first-of-type > li")
+
+lst.each do |item|
+  t = item.text
+  if t =~ /#{book_title}　\d\d.+新字新仮名/
+    item_name = t.sub(/^.*(\d\d) (.+)（.*$/) {
+                "#{author_name}.#{book_title}.#$1#$2.zip" }
+    print item_name + "\t"
+    # get download url
+    item_url = item.css("a:first-of-type").attr("href").to_s.
+          sub(/^\.\./, 'http://www.aozora.gr.jp')
+    item_dlink_base = item_url.sub(/\/[^\/]+?$/, '')
+    item_page = Nokogiri.HTML open(item_url)
+    item_dlink = item_page.css('table.download a[href$="zip"]').
+                 attr("href").text.sub(/^\./, item_dlink_base)
+    puts item_dlink
+    # download
+    system %[wget -O "#{save_dir + item_name}" '#{item_dlink}']
+  end
+end

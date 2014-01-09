@@ -1,0 +1,36 @@
+#!/bin/sh
+# note: link this to ~/opt/goagent/
+# desc: goagent local files configuration automation.
+
+dir="$HOME/opt/goagent/local"
+
+cd "$dir"
+
+# set permissions
+find -maxdepth 1 -type f -exec chmod 644 {} +
+chmod 755 proxy.py
+
+# use right version
+sed -ri '1s/python.?$/python2/' proxy.py
+
+# configure proxy.ini
+awk '
+  BEGIN { RS = ORS = "\r\n"; FS = OFS = " =" }
+  { switch ($1) {
+     case "visible":
+       $2 = " 0"
+       break
+     case "appid":
+       $2 = " g0aegent|g2aegent|g3aegent"
+       break
+     case "password":
+       $2 = " gategateopen"
+       break
+    }
+    print $0
+  }' \
+  proxy.ini > proxy.ini.new &&
+mv --backup --suffix='.old' proxy.ini.new proxy.ini
+
+# done
+echo "done"

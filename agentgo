@@ -14,6 +14,7 @@ chmod 755 proxy.py
 sed -ri '1s/python.?$/python2/' proxy.py
 
 # configure proxy.ini
+# [todo] - don't hard code password, get it form user input.
 awk '
   BEGIN { RS = ORS = "\r\n"; FS = OFS = " =" }
   { switch ($1) {

@@ -1,11 +1,19 @@
 #!/bin/sh
+# vim: fdm=marker
 # note: link this to ~/opt/goagent/
 # desc: goagent local files configuration automation.
 
-dir="$HOME/opt/goagent/local"
+local_dir="$HOME/opt/goagent/local"
+server_dir="$HOME/opt/goagent/server/gae"
 
-cd "$dir"
+# read password
+read -p "input goagent password: " psw
 
+cd "$server_dir" # {{{1
+# set password
+sed -ri "/^__password__ =/s/''/'$psw'/" gae.py
+
+cd "$local_dir" # {{{1
 # set permissions
 find -maxdepth 1 -type f -exec chmod 644 {} +
 chmod 755 proxy.py
@@ -14,8 +22,6 @@ chmod 755 proxy.py
 sed -ri '1s/python.?$/python2/' proxy.py
 
 # configure proxy.ini
-read -p "input goagent password: " psw
-
 awk -v psw=" $psw" \
  'BEGIN { RS = ORS = "\r\n"; FS = OFS = " =" }
   { switch ($1) {
@@ -32,7 +38,8 @@ awk -v psw=" $psw" \
     print $0
   }' \
   proxy.ini > proxy.ini.new &&
+
 mv --backup --suffix='.old' proxy.ini.new proxy.ini
 
-# done
+# done {{{1
 echo "done"
